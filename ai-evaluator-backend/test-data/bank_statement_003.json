@@ -1,0 +1,57 @@
+{
+  "documentType": "bank_statement",
+  "statement": {
+    "accountNumber": "****1234",
+    "accountType": "Checking",
+    "statementPeriod": {
+      "from": "2024-01-01",
+      "to": "2024-01-31"
+    },
+    "openingBalance": "2,456.78",
+    "closingBalance": "3,125.43",
+    "totalDeposits": "1,890.50",
+    "totalWithdrawals": "1,221.85"
+  },
+  "bank": {
+    "name": "First National Bank",
+    "branch": "Downtown Branch",
+    "address": "100 Bank Plaza, Financial District, FD 11111",
+    "phone": "+1-800-BANK-123"
+  },
+  "accountHolder": {
+    "name": "Sarah Johnson",
+    "address": "321 Elm Street, Residential Area, RA 22222"
+  },
+  "transactions": [
+    {
+      "date": "2024-01-03",
+      "description": "Direct Deposit - Salary",
+      "amount": "+1,500.00",
+      "balance": "3,956.78"
+    },
+    {
+      "date": "2024-01-05",
+      "description": "ATM Withdrawal",
+      "amount": "-200.00",
+      "balance": "3,756.78"
+    },
+    {
+      "date": "2024-01-10",
+      "description": "Online Transfer to Savings",
+      "amount": "-500.00",
+      "balance": "3,256.78"
+    },
+    {
+      "date": "2024-01-15",
+      "description": "Grocery Store Purchase",
+      "amount": "-145.67",
+      "balance": "3,111.11"
+    }
+  ],
+  "fees": [
+    {
+      "description": "Monthly Maintenance Fee",
+      "amount": "12.00"
+    }
+  ]
+}

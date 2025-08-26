@@ -1,0 +1,46 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-012",
+    "date": "2024-03-10",
+    "dueDate": "2024-04-10",
+    "amount": "3,850.00",
+    "currency": "USD",
+    "taxAmount": "350.00",
+    "subtotal": "3,500.00"
+  },
+  "vendor": {
+    "name": "Green Energy Consultants",
+    "address": "1800 Solar Avenue, Eco District, ED 50505",
+    "email": "projects@greenenergy.com",
+    "phone": "+1-555-SOLAR-GO",
+    "taxId": "50-5050505"
+  },
+  "customer": {
+    "name": "Sustainable Manufacturing Co",
+    "address": "950 Clean Tech Drive, Green City, GC 60606",
+    "email": "sustainability@sustainablemfg.com"
+  },
+  "items": [
+    {
+      "description": "Solar Panel Installation Assessment",
+      "quantity": "1",
+      "rate": "1,200.00",
+      "total": "1,200.00"
+    },
+    {
+      "description": "Energy Efficiency Audit",
+      "quantity": "1",
+      "rate": "800.00",
+      "total": "800.00"
+    },
+    {
+      "description": "Renewable Energy Transition Plan",
+      "quantity": "1",
+      "rate": "1,500.00",
+      "total": "1,500.00"
+    }
+  ],
+  "paymentTerms": "Net 30",
+  "notes": "Installation timeline depends on permit approval"
+}

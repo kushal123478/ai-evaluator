@@ -1,0 +1,46 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-006",
+    "date": "2024-02-10",
+    "dueDate": "2024-03-12",
+    "amount": "3,275.80",
+    "currency": "USD",
+    "taxAmount": "297.80",
+    "subtotal": "2,978.00"
+  },
+  "vendor": {
+    "name": "Construction Plus LLC",
+    "address": "1500 Builder Avenue, Construction Zone, CZ 44444",
+    "email": "billing@constructionplus.com",
+    "phone": "+1-555-BUILD-IT",
+    "taxId": "44-5566778"
+  },
+  "customer": {
+    "name": "Property Developers Corp",
+    "address": "200 Development Road, Real Estate City, RE 88888",
+    "email": "projects@propertydevelopers.com"
+  },
+  "items": [
+    {
+      "description": "Electrical Installation - Phase 1",
+      "quantity": "1",
+      "rate": "1,800.00",
+      "total": "1,800.00"
+    },
+    {
+      "description": "Plumbing Rough-in",
+      "quantity": "1",
+      "rate": "950.00",
+      "total": "950.00"
+    },
+    {
+      "description": "Drywall Installation",
+      "quantity": "4",
+      "rate": "57.00",
+      "total": "228.00"
+    }
+  ],
+  "paymentTerms": "Net 30",
+  "notes": "Materials included - permits filed separately"
+}

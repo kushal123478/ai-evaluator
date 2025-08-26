@@ -1,0 +1,40 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-007",
+    "date": "2024-02-15",
+    "dueDate": "2024-03-17",
+    "amount": "725.00",
+    "currency": "USD",
+    "taxAmount": "65.91",
+    "subtotal": "659.09"
+  },
+  "vendor": {
+    "name": "Wellness Coaching Services",
+    "address": "99 Health Way, Wellness Center, WC 99999",
+    "email": "admin@wellnesscoaching.com",
+    "phone": "+1-555-WELLNESS",
+    "taxId": "99-1122334"
+  },
+  "customer": {
+    "name": "Corporate Health Solutions",
+    "address": "500 Executive Plaza, Business District, BD 11122",
+    "email": "hr@corporatehealth.com"
+  },
+  "items": [
+    {
+      "description": "Employee Wellness Workshop",
+      "quantity": "1",
+      "rate": "450.00",
+      "total": "450.00"
+    },
+    {
+      "description": "Personal Coaching Sessions",
+      "quantity": "3",
+      "rate": "69.70",
+      "total": "209.09"
+    }
+  ],
+  "paymentTerms": "Net 30",
+  "notes": "Follow-up sessions available at discounted rate"
+}

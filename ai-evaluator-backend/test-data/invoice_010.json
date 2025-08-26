@@ -1,0 +1,46 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-010",
+    "date": "2024-03-01",
+    "dueDate": "2024-04-01",
+    "amount": "2,567.50",
+    "currency": "USD",
+    "taxAmount": "233.41",
+    "subtotal": "2,334.09"
+  },
+  "vendor": {
+    "name": "Financial Advisory Group",
+    "address": "2000 Wall Street Extension, Finance District, FD 10101",
+    "email": "billing@financialadvisory.com",
+    "phone": "+1-555-FINANCE",
+    "taxId": "10-1010101"
+  },
+  "customer": {
+    "name": "Growing Business LLC",
+    "address": "150 Expansion Road, Growth City, GC 20202",
+    "email": "accounting@growingbusiness.com"
+  },
+  "items": [
+    {
+      "description": "Financial Planning Consultation",
+      "quantity": "4",
+      "rate": "200.00",
+      "total": "800.00"
+    },
+    {
+      "description": "Tax Preparation Services",
+      "quantity": "1",
+      "rate": "650.00",
+      "total": "650.00"
+    },
+    {
+      "description": "Investment Portfolio Review",
+      "quantity": "3",
+      "rate": "294.70",
+      "total": "884.09"
+    }
+  ],
+  "paymentTerms": "Net 30",
+  "notes": "Quarterly review scheduled for June 2024"
+}

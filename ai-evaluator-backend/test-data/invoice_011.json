@@ -1,0 +1,46 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-011",
+    "date": "2024-03-05",
+    "dueDate": "2024-04-05",
+    "amount": "975.00",
+    "currency": "USD",
+    "taxAmount": "88.64",
+    "subtotal": "886.36"
+  },
+  "vendor": {
+    "name": "Photography & Video Services",
+    "address": "300 Camera Lane, Media District, MD 30303",
+    "email": "bookings@photovideo.com",
+    "phone": "+1-555-CAMERA1",
+    "taxId": "30-3030303"
+  },
+  "customer": {
+    "name": "Real Estate Premium",
+    "address": "700 Property Avenue, Luxury District, LD 40404",
+    "email": "marketing@realestatepremium.com"
+  },
+  "items": [
+    {
+      "description": "Property Photography Session",
+      "quantity": "1",
+      "rate": "450.00",
+      "total": "450.00"
+    },
+    {
+      "description": "Virtual Tour Creation",
+      "quantity": "1",
+      "rate": "300.00",
+      "total": "300.00"
+    },
+    {
+      "description": "Drone Aerial Photography",
+      "quantity": "2",
+      "rate": "68.18",
+      "total": "136.36"
+    }
+  ],
+  "paymentTerms": "Net 15",
+  "notes": "High-resolution files delivered via cloud storage"
+}

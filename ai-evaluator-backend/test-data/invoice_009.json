@@ -1,0 +1,46 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-009",
+    "date": "2024-02-25",
+    "dueDate": "2024-03-27",
+    "amount": "1,890.25",
+    "currency": "USD",
+    "taxAmount": "171.84",
+    "subtotal": "1,718.41"
+  },
+  "vendor": {
+    "name": "Event Planning Specialists",
+    "address": "1200 Celebration Avenue, Party District, PD 55544",
+    "email": "events@eventplanning.com",
+    "phone": "+1-555-PARTY-ON",
+    "taxId": "55-4433221"
+  },
+  "customer": {
+    "name": "Tech Conference Organizers",
+    "address": "800 Convention Center Drive, Event City, EC 99988",
+    "email": "logistics@techconference.com"
+  },
+  "items": [
+    {
+      "description": "Conference Setup & Coordination",
+      "quantity": "1",
+      "rate": "1,200.00",
+      "total": "1,200.00"
+    },
+    {
+      "description": "Audio/Visual Equipment Rental",
+      "quantity": "2",
+      "rate": "175.50",
+      "total": "351.00"
+    },
+    {
+      "description": "Catering Coordination Fee",
+      "quantity": "1",
+      "rate": "167.41",
+      "total": "167.41"
+    }
+  ],
+  "paymentTerms": "Net 15",
+  "notes": "Final headcount confirmation required 48 hours prior"
+}

@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(docker build:*)",
+      "Bash(sudo sh:*)",
+      "Bash(apt-get:*)",
+      "Read(//usr/bin/**)",
+      "Bash(docker-compose build:*)",
+      "Bash(sudo docker-compose:*)",
+      "Bash(sudo service:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(sudo docker build:*)",
+      "Bash(docker:*)",
+      "Read(//home/kushal/**)",
+      "Bash(npm search:*)",
+      "Bash(npm install:*)",
+      "mcp__puppeteer__puppeteer_navigate",
+      "Bash(sudo apt-get:*)",
+      "Bash(sudo apt-get install:*)",
+      "Bash(pip3 install:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

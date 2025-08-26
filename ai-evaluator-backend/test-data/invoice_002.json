@@ -1,0 +1,40 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-002",
+    "date": "2024-01-20",
+    "dueDate": "2024-02-20",
+    "amount": "2,890.00",
+    "currency": "USD",
+    "taxAmount": "289.00",
+    "subtotal": "2,601.00"
+  },
+  "vendor": {
+    "name": "Global Tech Services",
+    "address": "789 Technology Blvd, Silicon Valley, CA 94086",
+    "email": "invoices@globaltech.com",
+    "phone": "+1-555-987-6543",
+    "taxId": "87-9876543"
+  },
+  "customer": {
+    "name": "Innovation Labs LLC",
+    "address": "321 Innovation Way, Tech City, TC 12345",
+    "email": "billing@innovationlabs.com"
+  },
+  "items": [
+    {
+      "description": "Cloud Infrastructure Setup",
+      "quantity": "1",
+      "rate": "1,500.00",
+      "total": "1,500.00"
+    },
+    {
+      "description": "Database Migration Services",
+      "quantity": "8",
+      "rate": "137.63",
+      "total": "1,101.00"
+    }
+  ],
+  "paymentTerms": "Net 15",
+  "notes": "Migration includes full data backup and testing"
+}

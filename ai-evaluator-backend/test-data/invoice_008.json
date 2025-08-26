@@ -1,0 +1,46 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-008",
+    "date": "2024-02-20",
+    "dueDate": "2024-03-22",
+    "amount": "4,125.00",
+    "currency": "USD",
+    "taxAmount": "375.00",
+    "subtotal": "3,750.00"
+  },
+  "vendor": {
+    "name": "Software Development Studio",
+    "address": "750 Code Street, Developer District, DD 66666",
+    "email": "contracts@softwaredev.com",
+    "phone": "+1-555-DEV-CODE",
+    "taxId": "66-7788990"
+  },
+  "customer": {
+    "name": "E-commerce Startup",
+    "address": "425 Online Boulevard, Digital City, DC 77788",
+    "email": "tech@ecommercestartup.com"
+  },
+  "items": [
+    {
+      "description": "Mobile App Development - MVP",
+      "quantity": "1",
+      "rate": "2,500.00",
+      "total": "2,500.00"
+    },
+    {
+      "description": "API Integration Services",
+      "quantity": "5",
+      "rate": "150.00",
+      "total": "750.00"
+    },
+    {
+      "description": "Quality Assurance Testing",
+      "quantity": "10",
+      "rate": "50.00",
+      "total": "500.00"
+    }
+  ],
+  "paymentTerms": "Net 30",
+  "notes": "Deployment and maintenance package available"
+}

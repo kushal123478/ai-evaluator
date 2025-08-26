@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./ai-evaluator-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai-evaluator-backend/test-data:/app/test-data
+      - ./ai-evaluator-backend/uploads:/app/uploads
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  frontend:
+    build: ./ai-evaluator-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+    depends_on:
+      - backend

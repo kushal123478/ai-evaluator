@@ -1,0 +1,46 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-003",
+    "date": "2024-01-25",
+    "dueDate": "2024-02-25",
+    "amount": "875.50",
+    "currency": "USD",
+    "taxAmount": "79.59",
+    "subtotal": "795.91"
+  },
+  "vendor": {
+    "name": "Creative Design Studio",
+    "address": "456 Artist Lane, Design District, DD 56789",
+    "email": "studio@creativedesign.com",
+    "phone": "+1-555-456-7890",
+    "taxId": "45-6789012"
+  },
+  "customer": {
+    "name": "Marketing Plus Agency",
+    "address": "654 Brand Street, Marketing City, MC 98765",
+    "email": "finance@marketingplus.com"
+  },
+  "items": [
+    {
+      "description": "Logo Design Package",
+      "quantity": "1",
+      "rate": "450.00",
+      "total": "450.00"
+    },
+    {
+      "description": "Brand Guidelines Document",
+      "quantity": "1",
+      "rate": "225.00",
+      "total": "225.00"
+    },
+    {
+      "description": "Business Card Design",
+      "quantity": "3",
+      "rate": "40.30",
+      "total": "120.91"
+    }
+  ],
+  "paymentTerms": "Net 30",
+  "notes": "Includes 2 rounds of revisions per deliverable"
+}

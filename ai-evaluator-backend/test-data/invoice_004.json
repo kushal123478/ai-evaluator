@@ -1,0 +1,46 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-004",
+    "date": "2024-02-01",
+    "dueDate": "2024-03-02",
+    "amount": "5,250.00",
+    "currency": "USD",
+    "taxAmount": "477.27",
+    "subtotal": "4,772.73"
+  },
+  "vendor": {
+    "name": "Legal Associates Group",
+    "address": "1001 Justice Drive, Law District, LD 11111",
+    "email": "billing@legalassoc.com",
+    "phone": "+1-555-LAW-FIRM",
+    "taxId": "11-2233445"
+  },
+  "customer": {
+    "name": "Startup Ventures Inc",
+    "address": "777 Entrepreneur Ave, Business Park, BP 55555",
+    "email": "legal@startupventures.com"
+  },
+  "items": [
+    {
+      "description": "Corporate Formation Services",
+      "quantity": "1",
+      "rate": "2,500.00",
+      "total": "2,500.00"
+    },
+    {
+      "description": "Contract Review - Employment Agreements",
+      "quantity": "6",
+      "rate": "285.00",
+      "total": "1,710.00"
+    },
+    {
+      "description": "Intellectual Property Filing",
+      "quantity": "1",
+      "rate": "562.73",
+      "total": "562.73"
+    }
+  ],
+  "paymentTerms": "Net 30",
+  "notes": "Retainer agreement on file for ongoing services"
+}

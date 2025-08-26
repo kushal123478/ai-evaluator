@@ -1,0 +1,46 @@
+{
+  "documentType": "invoice",
+  "invoice": {
+    "number": "INV-2024-005",
+    "date": "2024-02-05",
+    "dueDate": "2024-03-05",
+    "amount": "1,650.00",
+    "currency": "USD",
+    "taxAmount": "150.00",
+    "subtotal": "1,500.00"
+  },
+  "vendor": {
+    "name": "Digital Marketing Pro",
+    "address": "333 Social Media Blvd, Online City, OC 77777",
+    "email": "invoices@digitalmarketingpro.com",
+    "phone": "+1-555-DIGITAL",
+    "taxId": "77-8899001"
+  },
+  "customer": {
+    "name": "Local Restaurant Group",
+    "address": "888 Food Street, Culinary District, CD 33333",
+    "email": "management@localrestaurants.com"
+  },
+  "items": [
+    {
+      "description": "Social Media Management - Monthly",
+      "quantity": "1",
+      "rate": "800.00",
+      "total": "800.00"
+    },
+    {
+      "description": "Google Ads Campaign Setup",
+      "quantity": "1",
+      "rate": "400.00",
+      "total": "400.00"
+    },
+    {
+      "description": "Content Creation - Blog Posts",
+      "quantity": "6",
+      "rate": "50.00",
+      "total": "300.00"
+    }
+  ],
+  "paymentTerms": "Net 15",
+  "notes": "Monthly recurring service - auto-renewal"
+}

@@ -1,0 +1,43 @@
+{
+  "documentType": "receipt",
+  "receipt": {
+    "number": "R-789456",
+    "date": "2024-01-20",
+    "time": "14:35:22",
+    "total": "45.67",
+    "currency": "USD",
+    "paymentMethod": "Credit Card",
+    "cardLastFour": "4567"
+  },
+  "merchant": {
+    "name": "Coffee Corner Cafe",
+    "address": "789 Coffee St, Downtown, DT 12345",
+    "phone": "+1-555-987-6543"
+  },
+  "items": [
+    {
+      "description": "Large Latte",
+      "quantity": "2",
+      "unitPrice": "5.75",
+      "total": "11.50"
+    },
+    {
+      "description": "Blueberry Muffin",
+      "quantity": "1",
+      "unitPrice": "3.25",
+      "total": "3.25"
+    },
+    {
+      "description": "Avocado Toast",
+      "quantity": "1",
+      "unitPrice": "8.95",
+      "total": "8.95"
+    }
+  ],
+  "tax": {
+    "rate": "8.5%",
+    "amount": "2.02"
+  },
+  "tip": "19.95",
+  "customerName": "John Smith"
+}
