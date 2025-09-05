@@ -17,11 +17,11 @@ import os
 
 environment = os.getenv("ENVIRONMENT", "development")
 if environment == "production":
-    # Production CORS - Add your actual frontend domain here
+    # Production CORS - Azure Container Instances HTTP domains
     allowed_origins = [
-        "https://*.azurestaticapps.net",  # Azure Static Web Apps
-        "https://ai-evaluator-frontend.azurestaticapps.net",  # Your specific domain
-        # Add your custom domain here when ready
+        "http://ai-evaluator-frontend.eastus.azurecontainer.io",  # Frontend ACI domain
+        "http://localhost:3000",  # Local development fallback
+        "http://127.0.0.1:3000",  # Local development fallback
     ]
 else:
     # Development CORS
@@ -35,7 +35,7 @@ else:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https://.*\.azurestaticapps\.net",  # Allow all Azure Static Web Apps
+    allow_origin_regex=r"http://.*\.azurecontainer\.io",  # Allow all Azure Container Instance HTTP domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
