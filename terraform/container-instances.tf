@@ -52,7 +52,7 @@ resource "azurerm_container_group" "frontend" {
     }
 
     environment_variables = {
-      VITE_API_BASE_URL = "http://${azurerm_container_group.backend.fqdn}:8000"
+      VITE_API_BASE_URL = "http://${var.app_name}-backend.${var.location}.azurecontainer.io:8000"
     }
   }
 

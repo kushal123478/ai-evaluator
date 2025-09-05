@@ -119,6 +119,8 @@ jobs:
         cat > terraform.tfvars <<EOF
         backend_docker_image = "${{ needs.build-backend.outputs.backend-tag }}"
         frontend_docker_image = "aievaluatoracr.azurecr.io/ai-evaluator-frontend:develop"
+        app_name = "ai-evaluator"
+        location = "eastus"
         EOF
 
     - name: Update backend container image
@@ -134,7 +136,7 @@ jobs:
 
   deploy-frontend:
     runs-on: ubuntu-latest
-    needs: [build-frontend, deploy-backend]
+    needs: build-frontend
     permissions:
       contents: read
 
@@ -163,6 +165,8 @@ jobs:
         cat > terraform.tfvars <<EOF
         backend_docker_image = "aievaluatoracr.azurecr.io/ai-evaluator-backend:develop"
         frontend_docker_image = "${{ needs.build-frontend.outputs.frontend-tag }}"
+        app_name = "ai-evaluator"
+        location = "eastus"
         EOF
 
     - name: Update frontend container image
