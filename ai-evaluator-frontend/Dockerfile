@@ -13,6 +13,10 @@ RUN npm install
 # Copy source code
 COPY . .
 
+# Set build-time environment variables
+ARG VITE_API_BASE_URL=http://ai-evaluator-backend.eastus.azurecontainer.io:8000
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # Build the app
 RUN npm run build
 

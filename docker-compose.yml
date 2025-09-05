@@ -13,10 +13,11 @@ services:
       - PORT=8000
 
   frontend:
-    build: ./ai-evaluator-frontend
+    build: 
+      context: ./ai-evaluator-frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8000
     ports:
       - "80:80"       # HTTP
-    environment:
-      - VITE_API_BASE_URL=http://localhost:8000
     depends_on:
       - backend

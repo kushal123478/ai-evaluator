@@ -5,11 +5,10 @@ const getApiBaseUrl = (): string => {
     return import.meta.env.VITE_API_BASE_URL;
   }
 
-  // Check if we're running in Docker (nginx proxy setup)
-  // In Docker, nginx handles API proxying, so we use relative URLs
+  // Check if we're running locally via npm dev server
   if (window.location.hostname === 'localhost' && window.location.port === '3000') {
-    // When running via nginx proxy in Docker, use empty string for relative URLs
-    return '';
+    // Local development via npm run dev
+    return 'http://localhost:8000';
   }
 
   // Environment-based defaults
