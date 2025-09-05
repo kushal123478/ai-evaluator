@@ -94,11 +94,11 @@ jobs:
         name: ${{ secrets.AZURE_APP_NAME }}-frontend
         location: ${{ secrets.AZURE_LOCATION }}
         ports: 80
-        environment-variables: VITE_API_BASE_URL=https://${{ secrets.AZURE_APP_NAME }}-backend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io:8000
+        environment-variables: VITE_API_BASE_URL=http://${{ secrets.AZURE_APP_NAME }}-backend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io:8000
         cpu: 0.5
         memory: 1.0
 
     - name: Output deployment URLs
       run: |
-        echo "Backend deployed to: https://${{ secrets.AZURE_APP_NAME }}-backend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io:8000"
-        echo "Frontend deployed to: https://${{ secrets.AZURE_APP_NAME }}-frontend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io"
+        echo "Backend deployed to: http://${{ secrets.AZURE_APP_NAME }}-backend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io:8000"
+        echo "Frontend deployed to: http://${{ secrets.AZURE_APP_NAME }}-frontend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io"

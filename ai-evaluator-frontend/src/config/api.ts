@@ -17,7 +17,7 @@ const getApiBaseUrl = (): string => {
   
   if (environment === 'production') {
     // Production API URL - Update this with your actual backend URL
-    return 'https://ai-evaluator-backend.eastus.azurecontainer.io:8000';
+    return 'http://ai-evaluator-backend.eastus.azurecontainer.io:8000';
   }
   
   // Development default (when running locally with npm run dev)
