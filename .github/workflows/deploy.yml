@@ -113,12 +113,18 @@ jobs:
       working-directory: ./terraform
       run: terraform init
 
+    - name: Create tfvars file
+      working-directory: ./terraform
+      run: |
+        cat > terraform.tfvars <<EOF
+        backend_docker_image = "${{ needs.build-backend.outputs.backend-tag }}"
+        frontend_docker_image = "aievaluatoracr.azurecr.io/ai-evaluator-frontend:develop"
+        EOF
+
     - name: Update backend container image
       working-directory: ./terraform
       run: |
-        terraform apply -auto-approve \
-          -var="backend_docker_image=${{ needs.build-backend.outputs.backend-tag }}" \
-          -target=azurerm_container_group.backend
+        terraform apply -auto-approve -target=azurerm_container_group.backend
 
     - name: Get backend URL
       working-directory: ./terraform
@@ -151,12 +157,18 @@ jobs:
       working-directory: ./terraform
       run: terraform init
 
+    - name: Create tfvars file
+      working-directory: ./terraform
+      run: |
+        cat > terraform.tfvars <<EOF
+        backend_docker_image = "aievaluatoracr.azurecr.io/ai-evaluator-backend:develop"
+        frontend_docker_image = "${{ needs.build-frontend.outputs.frontend-tag }}"
+        EOF
+
     - name: Update frontend container image
       working-directory: ./terraform
       run: |
-        terraform apply -auto-approve \
-          -var="frontend_docker_image=${{ needs.build-frontend.outputs.frontend-tag }}" \
-          -target=azurerm_container_group.frontend
+        terraform apply -auto-approve -target=azurerm_container_group.frontend
 
     - name: Get frontend URL
       working-directory: ./terraform
