@@ -113,6 +113,11 @@ jobs:
       working-directory: ./terraform
       run: terraform init
     
+    - name: Import existing resources
+      working-directory: ./terraform
+      run: |
+        terraform import azurerm_resource_group.main "/subscriptions/99c0cf0f-2430-4c10-8482-6b8bc3dea536/resourceGroups/rg-ai-evaluator" || true
+    
     - name: Terraform Refresh
       working-directory: ./terraform
       run: terraform refresh
@@ -177,6 +182,11 @@ jobs:
     - name: Terraform Init
       working-directory: ./terraform
       run: terraform init
+
+    - name: Import existing resources
+      working-directory: ./terraform
+      run: |
+        terraform import azurerm_resource_group.main "/subscriptions/99c0cf0f-2430-4c10-8482-6b8bc3dea536/resourceGroups/rg-ai-evaluator" || true
 
     - name: Terraform Refresh
       working-directory: ./terraform
