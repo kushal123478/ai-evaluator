@@ -16,12 +16,12 @@ const getApiBaseUrl = (): string => {
   const environment = import.meta.env.MODE || 'development';
   
   if (environment === 'production') {
-    // Production API URL - Update this with your actual backend URL (prefer HTTPS)
-    return 'https://ai-evaluator-backend.eastus.azurecontainer.io:8443';
+    // Production API URL - Update this with your actual backend URL
+    return 'http://ai-evaluator-backend.eastus.azurecontainer.io:8000';
   }
   
-  // Development default (when running locally with npm run dev) - prefer HTTPS
-  return 'https://localhost:8443';
+  // Development default (when running locally with npm run dev)
+  return 'http://localhost:8000';
 };
 
 export const API_BASE_URL = getApiBaseUrl();

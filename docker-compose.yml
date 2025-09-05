@@ -4,21 +4,19 @@ services:
   backend:
     build: ./ai-evaluator-backend
     ports:
-      - "8000:8000"   # HTTP (for compatibility)
-      - "8443:8443"   # HTTPS (primary)
+      - "8000:8000"   # HTTP
     volumes:
       - ./ai-evaluator-backend/test-data:/app/test-data
       - ./ai-evaluator-backend/uploads:/app/uploads
     environment:
       - PYTHONUNBUFFERED=1
-      - PORT=8443
+      - PORT=8000
 
   frontend:
     build: ./ai-evaluator-frontend
     ports:
-      - "80:80"       # HTTP (redirects to HTTPS)
-      - "443:443"     # HTTPS (primary)
+      - "80:80"       # HTTP
     environment:
-      - VITE_API_BASE_URL=https://localhost:8443
+      - VITE_API_BASE_URL=http://localhost:8000
     depends_on:
       - backend

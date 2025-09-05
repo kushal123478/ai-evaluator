@@ -19,18 +19,6 @@ RUN npm run build
 # Production stage with nginx
 FROM nginx:alpine
 
-# Install openssl for generating self-signed certificates
-RUN apk add --no-cache openssl
-
-# Create SSL certificate directory
-RUN mkdir -p /etc/nginx/ssl
-
-# Generate self-signed SSL certificate (for development/demo purposes)
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout /etc/nginx/ssl/server.key \
-    -out /etc/nginx/ssl/server.crt \
-    -subj "/C=US/ST=State/L=City/O=Organization/CN=localhost"
-
 # Copy built app to nginx
 COPY --from=build /app/dist /usr/share/nginx/html
 
@@ -38,7 +26,7 @@ COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose ports
-EXPOSE 80 443
+EXPOSE 80
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
