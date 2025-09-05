@@ -31,7 +31,7 @@ variable "frontend_sku_name" {
 variable "backend_docker_image" {
   description = "Docker image name for the backend application"
   type        = string
-  default     = "python:3.11-slim"
+  default     = "python:3.12-slim"
 }
 
 variable "backend_docker_tag" {

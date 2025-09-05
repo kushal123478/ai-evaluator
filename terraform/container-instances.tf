@@ -8,13 +8,18 @@ resource "azurerm_container_group" "backend" {
 
   container {
     name   = "backend"
-    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    image  = var.backend_docker_image
     cpu    = "0.5"
     memory = "1.0"
 
     ports {
-      port     = 80
+      port     = 8000
       protocol = "TCP"
+    }
+
+    environment_variables = {
+      PYTHONUNBUFFERED = "1"
+      ENVIRONMENT      = "production"
     }
   }
 
@@ -31,13 +36,17 @@ resource "azurerm_container_group" "frontend" {
 
   container {
     name   = "frontend"
-    image  = "mcr.microsoft.com/azuredocs/aci-helloworld:latest"
+    image  = var.frontend_docker_image
     cpu    = "0.5"
     memory = "1.0"
 
     ports {
       port     = 80
       protocol = "TCP"
+    }
+
+    environment_variables = {
+      VITE_API_BASE_URL = "https://${var.app_name}-backend.${var.location}.azurecontainer.io:8000"
     }
   }
 
