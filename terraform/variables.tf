@@ -29,27 +29,15 @@ variable "frontend_sku_name" {
 }
 
 variable "backend_docker_image" {
-  description = "Docker image name for the backend application"
+  description = "Full Docker image name for the backend application (registry/name:tag)"
   type        = string
-  default     = "python:3.12-slim"
-}
-
-variable "backend_docker_tag" {
-  description = "Docker image tag for the backend application"
-  type        = string
-  default     = "latest"
+  default     = "aievaluatoracr.azurecr.io/ai-evaluator-backend:develop"
 }
 
 variable "frontend_docker_image" {
-  description = "Docker image name for the frontend application"
+  description = "Full Docker image name for the frontend application (registry/name:tag)"
   type        = string
-  default     = "nginx:alpine"
-}
-
-variable "frontend_docker_tag" {
-  description = "Docker image tag for the frontend application"
-  type        = string
-  default     = "latest"
+  default     = "aievaluatoracr.azurecr.io/ai-evaluator-frontend:develop"
 }
 
 variable "frontend_custom_domain" {

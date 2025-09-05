@@ -1,8 +1,10 @@
-name: Build and Deploy to Azure Container Instances
+name: Build and Deploy Applications
 
 on:
   push:
     branches: [develop]
+    paths-ignore:
+      - 'terraform/**'
 
 env:
   REGISTRY: aievaluatoracr.azurecr.io
@@ -93,59 +95,71 @@ jobs:
       contents: read
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
     - name: Log in to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Deploy backend to Azure Container Instances
-      uses: azure/aci-deploy@v1
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
       with:
-        resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
-        dns-name-label: ${{ secrets.AZURE_APP_NAME }}-backend
-        image: ${{ needs.build-backend.outputs.backend-tag }}
-        registry-login-server: ${{ env.REGISTRY }}
-        registry-username: ${{ secrets.ACR_USERNAME }}
-        registry-password: ${{ secrets.ACR_PASSWORD }}
-        name: ${{ secrets.AZURE_APP_NAME }}-backend
-        location: ${{ secrets.AZURE_LOCATION }}
-        ports: 8000
-        environment-variables: PYTHONUNBUFFERED=1
-        cpu: 0.5
-        memory: 1.0
+        terraform_version: '1.5.0'
+        terraform_wrapper: false
 
-    - name: Output backend deployment URL
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+
+    - name: Update backend container image
+      working-directory: ./terraform
       run: |
-        echo "Backend deployed to: http://${{ secrets.AZURE_APP_NAME }}-backend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io:8000"
+        terraform apply -auto-approve \
+          -var="backend_docker_image=${{ needs.build-backend.outputs.backend-tag }}" \
+          -target=azurerm_container_group.backend
+
+    - name: Get backend URL
+      working-directory: ./terraform
+      run: |
+        BACKEND_URL=$(terraform output -raw backend_url)
+        echo "Backend deployed to: $BACKEND_URL"
 
   deploy-frontend:
     runs-on: ubuntu-latest
-    needs: build-frontend
+    needs: [build-frontend, deploy-backend]
     permissions:
       contents: read
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
     - name: Log in to Azure
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Deploy frontend to Azure Container Instances
-      uses: azure/aci-deploy@v1
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
       with:
-        resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
-        dns-name-label: ${{ secrets.AZURE_APP_NAME }}-frontend
-        image: ${{ needs.build-frontend.outputs.frontend-tag }}
-        registry-login-server: ${{ env.REGISTRY }}
-        registry-username: ${{ secrets.ACR_USERNAME }}
-        registry-password: ${{ secrets.ACR_PASSWORD }}
-        name: ${{ secrets.AZURE_APP_NAME }}-frontend
-        location: ${{ secrets.AZURE_LOCATION }}
-        ports: 80
-        environment-variables: VITE_API_BASE_URL=http://${{ secrets.AZURE_APP_NAME }}-backend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io:8000
-        cpu: 0.5
-        memory: 1.0
+        terraform_version: '1.5.0'
+        terraform_wrapper: false
 
-    - name: Output frontend deployment URL
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+
+    - name: Update frontend container image
+      working-directory: ./terraform
       run: |
-        echo "Frontend deployed to: http://${{ secrets.AZURE_APP_NAME }}-frontend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io"
+        terraform apply -auto-approve \
+          -var="frontend_docker_image=${{ needs.build-frontend.outputs.frontend-tag }}" \
+          -target=azurerm_container_group.frontend
+
+    - name: Get frontend URL
+      working-directory: ./terraform
+      run: |
+        FRONTEND_URL=$(terraform output -raw frontend_url)
+        echo "Frontend deployed to: $FRONTEND_URL"

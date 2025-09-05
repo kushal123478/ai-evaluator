@@ -23,6 +23,12 @@ resource "azurerm_container_group" "backend" {
     }
   }
 
+  image_registry_credential {
+    server   = azurerm_container_registry.acr.login_server
+    username = azurerm_container_registry.acr.admin_username
+    password = azurerm_container_registry.acr.admin_password
+  }
+
   tags = var.tags
 }
 
@@ -46,8 +52,14 @@ resource "azurerm_container_group" "frontend" {
     }
 
     environment_variables = {
-      VITE_API_BASE_URL = "http://${var.app_name}-backend.${var.location}.azurecontainer.io:8000"
+      VITE_API_BASE_URL = "http://${azurerm_container_group.backend.fqdn}:8000"
     }
+  }
+
+  image_registry_credential {
+    server   = azurerm_container_registry.acr.login_server
+    username = azurerm_container_registry.acr.admin_username
+    password = azurerm_container_registry.acr.admin_password
   }
 
   tags = var.tags
