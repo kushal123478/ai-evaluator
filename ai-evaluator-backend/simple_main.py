@@ -17,25 +17,32 @@ import os
 
 environment = os.getenv("ENVIRONMENT", "development")
 if environment == "production":
-    # Production CORS - Azure Container Instances HTTP domains
+    # Production CORS - Azure Container Instances HTTPS domains (prioritize HTTPS, fallback to HTTP)
     allowed_origins = [
-        "http://ai-evaluator-frontend.eastus.azurecontainer.io",  # Frontend ACI domain
-        "http://localhost:3000",  # Local development fallback
-        "http://127.0.0.1:3000",  # Local development fallback
+        "https://ai-evaluator-frontend.eastus.azurecontainer.io",  # Frontend ACI domain (HTTPS)
+        "http://ai-evaluator-frontend.eastus.azurecontainer.io",   # Frontend ACI domain (HTTP fallback)
+        "https://localhost:3000",  # Local development HTTPS
+        "http://localhost:3000",   # Local development HTTP fallback
+        "https://127.0.0.1:3000",  # Local development HTTPS
+        "http://127.0.0.1:3000",   # Local development HTTP fallback
     ]
 else:
-    # Development CORS
+    # Development CORS - prioritize HTTPS, allow HTTP fallback
     allowed_origins = [
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:3001", 
-        "http://127.0.0.1:3001"
+        "https://localhost:3000",
+        "https://127.0.0.1:3000",
+        "https://localhost:3001", 
+        "https://127.0.0.1:3001",
+        "http://localhost:3000",   # HTTP fallback for development
+        "http://127.0.0.1:3000",   # HTTP fallback for development
+        "http://localhost:3001",   # HTTP fallback for development
+        "http://127.0.0.1:3001"    # HTTP fallback for development
     ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"http://.*\.azurecontainer\.io",  # Allow all Azure Container Instance HTTP domains
+    allow_origin_regex=r"https://.*\.azurecontainer\.io|http://.*\.azurecontainer\.io",  # Allow both HTTPS and HTTP Azure domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -382,9 +389,26 @@ async def get_dashboard_stats():
 if __name__ == "__main__":
     import uvicorn
     import os
+    from pathlib import Path
     
-    # Use environment variable for port, default to 8000 for production
-    port = int(os.getenv("PORT", 8000))
+    # Use environment variable for port, default to 8443 for HTTPS
+    port = int(os.getenv("PORT", 8443))
     host = os.getenv("HOST", "0.0.0.0")
     
-    uvicorn.run(app, host=host, port=port)
+    # SSL configuration
+    ssl_keyfile = "/app/ssl/server.key"
+    ssl_certfile = "/app/ssl/server.crt"
+    
+    # Check if SSL certificates exist
+    if Path(ssl_keyfile).exists() and Path(ssl_certfile).exists():
+        print("Starting server with HTTPS on port", port)
+        uvicorn.run(
+            app, 
+            host=host, 
+            port=port, 
+            ssl_keyfile=ssl_keyfile, 
+            ssl_certfile=ssl_certfile
+        )
+    else:
+        print("SSL certificates not found, starting with HTTP on port", port)
+        uvicorn.run(app, host=host, port=port)
