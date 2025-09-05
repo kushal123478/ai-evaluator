@@ -7,7 +7,7 @@ resource "azurerm_container_group" "backend" {
   os_type            = "Linux"
 
   container {
-    name   = "backend"
+    name   = "ai-evaluator-backend"
     image  = var.backend_docker_image
     cpu    = "0.5"
     memory = "1.0"
@@ -19,7 +19,6 @@ resource "azurerm_container_group" "backend" {
 
     environment_variables = {
       PYTHONUNBUFFERED = "1"
-      ENVIRONMENT      = "production"
     }
   }
 
@@ -41,7 +40,7 @@ resource "azurerm_container_group" "frontend" {
   os_type            = "Linux"
 
   container {
-    name   = "frontend"
+    name   = "ai-evaluator-frontend"
     image  = var.frontend_docker_image
     cpu    = "0.5"
     memory = "1.0"
