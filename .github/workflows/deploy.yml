@@ -116,9 +116,21 @@ jobs:
     - name: Create tfvars file
       working-directory: ./terraform
       run: |
+        echo "Branch: ${{ github.ref_name }}"
         echo "Backend image: ${{ needs.build-backend.outputs.backend-tag }}"
+        echo "Registry: ${{ env.REGISTRY }}"
+        echo "Backend image name: ${{ env.BACKEND_IMAGE_NAME }}"
+        
+        # Fallback to construct image name if output is empty
+        BACKEND_IMAGE="${{ needs.build-backend.outputs.backend-tag }}"
+        if [ -z "$BACKEND_IMAGE" ]; then
+          BACKEND_IMAGE="${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.ref_name }}"
+        fi
+        
+        echo "Final backend image: $BACKEND_IMAGE"
+        
         cat > terraform.tfvars <<EOF
-        backend_docker_image = "${{ needs.build-backend.outputs.backend-tag }}"
+        backend_docker_image = "$BACKEND_IMAGE"
         frontend_docker_image = "aievaluatoracr.azurecr.io/ai-evaluator-frontend:develop"
         app_name = "ai-evaluator"
         location = "eastus"
@@ -165,13 +177,27 @@ jobs:
     - name: Create tfvars file
       working-directory: ./terraform
       run: |
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Frontend image: ${{ needs.build-frontend.outputs.frontend-tag }}"
+        echo "Registry: ${{ env.REGISTRY }}"
+        echo "Frontend image name: ${{ env.FRONTEND_IMAGE_NAME }}"
+        
+        # Fallback to construct image name if output is empty
+        FRONTEND_IMAGE="${{ needs.build-frontend.outputs.frontend-tag }}"
+        if [ -z "$FRONTEND_IMAGE" ]; then
+          FRONTEND_IMAGE="${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.ref_name }}"
+        fi
+        
+        echo "Final frontend image: $FRONTEND_IMAGE"
+        
         cat > terraform.tfvars <<EOF
         backend_docker_image = "aievaluatoracr.azurecr.io/ai-evaluator-backend:develop"
-        frontend_docker_image = "${{ needs.build-frontend.outputs.frontend-tag }}"
+        frontend_docker_image = "$FRONTEND_IMAGE"
         app_name = "ai-evaluator"
         location = "eastus"
         resource_group_name = "rg-ai-evaluator"
         EOF
+        cat terraform.tfvars
 
     - name: Update frontend container image
       working-directory: ./terraform
