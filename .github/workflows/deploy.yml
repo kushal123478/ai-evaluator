@@ -10,11 +10,13 @@ env:
   BACKEND_IMAGE_NAME: ai-evaluator-backend
 
 jobs:
-  build-and-deploy:
+  build-backend:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    outputs:
+      backend-tag: ${{ steps.image-tags.outputs.BACKEND_TAG }}
 
     steps:
     - name: Checkout repository
@@ -30,21 +32,10 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Set image tags
+    - name: Set backend image tag
       id: image-tags
       run: |
-        echo "FRONTEND_TAG=${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
         echo "BACKEND_TAG=${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
-
-    - name: Build and push frontend Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./ai-evaluator-frontend
-        file: ./ai-evaluator-frontend/Dockerfile
-        push: true
-        tags: ${{ steps.image-tags.outputs.FRONTEND_TAG }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
 
     - name: Build and push backend Docker image
       uses: docker/build-push-action@v5
@@ -53,14 +44,55 @@ jobs:
         file: ./ai-evaluator-backend/Dockerfile
         push: true
         tags: ${{ steps.image-tags.outputs.BACKEND_TAG }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-from: type=gha,scope=backend
+        cache-to: type=gha,mode=max,scope=backend
 
-    - name: Verify images were built
+  build-frontend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      frontend-tag: ${{ steps.image-tags.outputs.FRONTEND_TAG }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Log in to Azure Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Set frontend image tag
+      id: image-tags
       run: |
-        echo "Frontend image: ${{ steps.image-tags.outputs.FRONTEND_TAG }}"
-        echo "Backend image: ${{ steps.image-tags.outputs.BACKEND_TAG }}"
+        echo "FRONTEND_TAG=${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ github.ref_name }}" >> $GITHUB_OUTPUT
 
+    - name: Build and push frontend Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./ai-evaluator-frontend
+        file: ./ai-evaluator-frontend/Dockerfile
+        push: true
+        tags: ${{ steps.image-tags.outputs.FRONTEND_TAG }}
+        build-args: |
+          VITE_API_BASE_URL=http://${{ secrets.AZURE_APP_NAME }}-backend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io:8000
+        cache-from: type=gha,scope=frontend
+        cache-to: type=gha,mode=max,scope=frontend
+
+  deploy-backend:
+    runs-on: ubuntu-latest
+    needs: build-backend
+    permissions:
+      contents: read
+
+    steps:
     - name: Log in to Azure
       uses: azure/login@v1
       with:
@@ -71,7 +103,7 @@ jobs:
       with:
         resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
         dns-name-label: ${{ secrets.AZURE_APP_NAME }}-backend
-        image: ${{ steps.image-tags.outputs.BACKEND_TAG }}
+        image: ${{ needs.build-backend.outputs.backend-tag }}
         registry-login-server: ${{ env.REGISTRY }}
         registry-username: ${{ secrets.ACR_USERNAME }}
         registry-password: ${{ secrets.ACR_PASSWORD }}
@@ -82,12 +114,28 @@ jobs:
         cpu: 0.5
         memory: 1.0
 
+    - name: Output backend deployment URL
+      run: |
+        echo "Backend deployed to: http://${{ secrets.AZURE_APP_NAME }}-backend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io:8000"
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    needs: build-frontend
+    permissions:
+      contents: read
+
+    steps:
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - name: Deploy frontend to Azure Container Instances
       uses: azure/aci-deploy@v1
       with:
         resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
         dns-name-label: ${{ secrets.AZURE_APP_NAME }}-frontend
-        image: ${{ steps.image-tags.outputs.FRONTEND_TAG }}
+        image: ${{ needs.build-frontend.outputs.frontend-tag }}
         registry-login-server: ${{ env.REGISTRY }}
         registry-username: ${{ secrets.ACR_USERNAME }}
         registry-password: ${{ secrets.ACR_PASSWORD }}
@@ -98,7 +146,6 @@ jobs:
         cpu: 0.5
         memory: 1.0
 
-    - name: Output deployment URLs
+    - name: Output frontend deployment URL
       run: |
-        echo "Backend deployed to: http://${{ secrets.AZURE_APP_NAME }}-backend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io:8000"
         echo "Frontend deployed to: http://${{ secrets.AZURE_APP_NAME }}-frontend.${{ secrets.AZURE_LOCATION }}.azurecontainer.io"
