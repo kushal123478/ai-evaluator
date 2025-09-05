@@ -1,0 +1,26 @@
+# Copy this file to terraform.tfvars and update with your values
+
+resource_group_name = "rg-ai-evaluator-prod"
+location           = "East US"
+app_name           = "ai-evaluator-prod"
+
+# App Service Plan SKUs (B1, B2, B3, S1, S2, S3, P1v2, P2v2, P3v2, etc.)
+backend_sku_name  = "B1"
+frontend_sku_name = "B1"
+
+# Docker images - Update these with your actual registry and image names
+backend_docker_image  = "your-registry.azurecr.io/ai-evaluator-backend"
+backend_docker_tag    = "latest"
+frontend_docker_image = "your-registry.azurecr.io/ai-evaluator-frontend"
+frontend_docker_tag   = "latest"
+
+# Optional custom domains
+frontend_custom_domain = ""
+backend_custom_domain  = ""
+
+# Tags
+tags = {
+  Environment = "production"
+  Project     = "ai-evaluator"
+  Owner       = "your-team"
+}
