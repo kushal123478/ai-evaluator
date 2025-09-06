@@ -11,5 +11,13 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  define: {
+    global: 'globalThis',
+  },
+  resolve: {
+    alias: {
+      crypto: 'crypto-browserify',
+    }
   }
 })

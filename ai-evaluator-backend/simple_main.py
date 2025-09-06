@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -9,6 +9,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 import aiofiles
+from auth import get_current_user, get_optional_user
 
 app = FastAPI(title="AI Output Evaluator API", version="1.0.0")
 
@@ -146,9 +147,20 @@ async def root():
 async def health_check():
     return {"status": "ok", "timestamp": datetime.now().isoformat()}
 
+# Authentication Routes
+@app.get("/api/auth/me")
+async def get_user_info(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Get current user information"""
+    return {
+        "sub": current_user.get("sub"),
+        "name": current_user.get("name"),
+        "email": current_user.get("preferred_username", current_user.get("email")),
+        "roles": current_user.get("roles", [])
+    }
+
 # Test Cases Routes
 @app.get("/api/testcases/scan")
-async def scan_test_cases():
+async def scan_test_cases(current_user: Dict[str, Any] = Depends(get_current_user)):
     test_data_path = Path("test-data")
     if not test_data_path.exists():
         return []
@@ -191,7 +203,7 @@ async def scan_test_cases():
     return test_cases
 
 @app.post("/api/testcases/load/{test_case_id}")
-async def load_test_case(test_case_id: str):
+async def load_test_case(test_case_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
     json_file = Path(f"test-data/{test_case_id}.json")
     pdf_file = Path(f"test-data/{test_case_id}.pdf")
     
@@ -247,7 +259,7 @@ async def load_test_case(test_case_id: str):
 
 # Document Routes
 @app.get("/api/documents")
-async def get_documents():
+async def get_documents(current_user: Dict[str, Any] = Depends(get_current_user)):
     documents = await load_json_file(DOCUMENTS_FILE)
     feedbacks = await load_json_file(FEEDBACKS_FILE)
     
@@ -259,7 +271,7 @@ async def get_documents():
     return result
 
 @app.get("/api/documents/{document_id}")
-async def get_document(document_id: str):
+async def get_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
     documents = await load_json_file(DOCUMENTS_FILE)
     document = next((doc for doc in documents if doc["id"] == document_id), None)
     
@@ -272,7 +284,7 @@ async def get_document(document_id: str):
     return convert_document_to_camelcase(document, doc_feedbacks)
 
 @app.post("/api/documents/{document_id}/submit")
-async def submit_document(document_id: str):
+async def submit_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
     documents = await load_json_file(DOCUMENTS_FILE)
     document = next((doc for doc in documents if doc["id"] == document_id), None)
     
@@ -293,7 +305,7 @@ async def submit_document(document_id: str):
     return convert_document_to_camelcase(document, doc_feedbacks)
 
 @app.delete("/api/documents/{document_id}")
-async def delete_document(document_id: str):
+async def delete_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
     documents = await load_json_file(DOCUMENTS_FILE)
     document = next((doc for doc in documents if doc["id"] == document_id), None)
     
@@ -313,7 +325,7 @@ async def delete_document(document_id: str):
 
 # Feedback Routes
 @app.post("/api/feedback")
-async def create_feedback(feedback: FeedbackCreate):
+async def create_feedback(feedback: FeedbackCreate, current_user: Dict[str, Any] = Depends(get_current_user)):
     feedbacks = await load_json_file(FEEDBACKS_FILE)
     
     # Check if feedback exists
@@ -347,7 +359,7 @@ async def create_feedback(feedback: FeedbackCreate):
 
 # Dashboard Routes
 @app.get("/api/dashboard/stats")
-async def get_dashboard_stats():
+async def get_dashboard_stats(current_user: Dict[str, Any] = Depends(get_current_user)):
     documents = await load_json_file(DOCUMENTS_FILE)
     feedbacks = await load_json_file(FEEDBACKS_FILE)
     

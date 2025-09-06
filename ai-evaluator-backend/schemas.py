@@ -61,3 +61,6 @@ class TestCaseResponse(BaseModel):
 
     class Config:
         populate_by_name = True
+
+# Update forward references
+DocumentResponse.model_rebuild()
