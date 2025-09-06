@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from typing import List
+from typing import List, Dict, Any
 import os
 from pathlib import Path
+from datetime import datetime
 
 from database import connect_to_mongo, close_mongo_connection
 from schemas import DocumentResponse, FeedbackCreate, FeedbackResponse
@@ -11,6 +12,7 @@ from services.testcase_service import testcase_service
 from services.document_service import document_service
 from services.feedback_service import feedback_service
 from services.dashboard_service import dashboard_service
+from auth import get_current_user, get_optional_user
 
 app = FastAPI(title="AI Output Evaluator API", version="1.0.0")
 
@@ -52,13 +54,31 @@ async def root():
 async def health_check():
     return {"status": "ok", "timestamp": datetime.now().isoformat()}
 
+# Authentication Routes
+@app.get("/api/auth/me")
+async def get_user_info(current_user: Dict[str, Any] = Depends(get_current_user)):
+    """Get current user information"""
+    return {
+        "user": current_user,
+        "authenticated": True
+    }
+
+@app.get("/api/auth/config")
+async def get_auth_config():
+    """Get authentication configuration for frontend"""
+    return {
+        "tenantId": os.getenv("AZURE_TENANT_ID"),
+        "clientId": os.getenv("AZURE_CLIENT_ID"),
+        "authority": f"https://login.microsoftonline.com/{os.getenv('AZURE_TENANT_ID')}"
+    }
+
 # Test Cases Routes
 @app.get("/api/testcases/scan")
-async def scan_test_cases():
+async def scan_test_cases(current_user: Dict[str, Any] = Depends(get_current_user)):
     return await testcase_service.scan_test_cases()
 
 @app.post("/api/testcases/load/{test_case_id}")
-async def load_test_case(test_case_id: str):
+async def load_test_case(test_case_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
     try:
         return await testcase_service.load_test_case(test_case_id)
     except FileNotFoundError:
@@ -68,25 +88,25 @@ async def load_test_case(test_case_id: str):
 
 # Document Routes
 @app.get("/api/documents", response_model=List[DocumentResponse])
-async def get_documents():
+async def get_documents(current_user: Dict[str, Any] = Depends(get_current_user)):
     return await document_service.get_all_documents()
 
 @app.get("/api/documents/{document_id}", response_model=DocumentResponse)
-async def get_document(document_id: str):
+async def get_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
     document = await document_service.get_document(document_id)
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
     return document
 
 @app.post("/api/documents/{document_id}/submit")
-async def submit_document(document_id: str):
+async def submit_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
     document = await document_service.submit_document(document_id)
     if not document:
         raise HTTPException(status_code=404, detail="Document not found or already submitted")
     return document
 
 @app.delete("/api/documents/{document_id}")
-async def delete_document(document_id: str):
+async def delete_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
     success = await document_service.delete_document(document_id)
     if not success:
         raise HTTPException(status_code=404, detail="Document not found")
@@ -94,12 +114,12 @@ async def delete_document(document_id: str):
 
 # Feedback Routes
 @app.post("/api/feedback", response_model=FeedbackResponse)
-async def create_feedback(feedback: FeedbackCreate):
+async def create_feedback(feedback: FeedbackCreate, current_user: Dict[str, Any] = Depends(get_current_user)):
     return await feedback_service.create_or_update_feedback(feedback)
 
 # Dashboard Routes
 @app.get("/api/dashboard/stats")
-async def get_dashboard_stats():
+async def get_dashboard_stats(current_user: Dict[str, Any] = Depends(get_current_user)):
     return await dashboard_service.get_dashboard_stats()
 
 if __name__ == "__main__":

@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(terraform import:*)"
+      "Bash(terraform import:*)",
+      "Bash(az group list --query \"[?name==''rg-ai-evaluator'']\" --output table)",
+      "Bash(find:*)",
+      "Bash(docker-compose build:*)"
     ],
     "deny": [],
     "ask": []

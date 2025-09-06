@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RefreshCw, FileText, Calendar, BarChart3, Eye, Database, FolderOpen, CheckCircle2 } from 'lucide-react';
 import { Document } from '../types';
-import { apiFetch } from '../config/api';
+import { useApi } from '../hooks/useApi';
+import UserProfile from '../components/UserProfile';
 
 interface TestCase {
   id: string;
@@ -16,6 +17,7 @@ interface TestCase {
 
 export const DocumentsPage: React.FC = () => {
   const navigate = useNavigate();
+  const { authenticatedRequest } = useApi();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [testCases, setTestCases] = useState<TestCase[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +30,7 @@ export const DocumentsPage: React.FC = () => {
 
   const fetchDocuments = async () => {
     try {
-      const response = await apiFetch('/api/documents');
+      const response = await authenticatedRequest('/api/documents');
       const data = await response.json();
       setDocuments(data);
     } catch (error) {
@@ -41,7 +43,7 @@ export const DocumentsPage: React.FC = () => {
   const scanTestCases = async () => {
     setScanningTestCases(true);
     try {
-      const response = await apiFetch('/api/testcases/scan');
+      const response = await authenticatedRequest('/api/testcases/scan');
       const data = await response.json();
       setTestCases(data);
     } catch (error) {
@@ -54,7 +56,7 @@ export const DocumentsPage: React.FC = () => {
   const handleLoadTestCase = async (testCaseId: string) => {
     setLoadingTestCase(testCaseId);
     try {
-      const response = await apiFetch(`/api/testcases/load/${testCaseId}`, {
+      const response = await authenticatedRequest(`/api/testcases/load/${testCaseId}`, {
         method: 'POST',
       });
 
@@ -109,7 +111,7 @@ export const DocumentsPage: React.FC = () => {
                 </p>
               </div>
             </div>
-            <div className="flex space-x-3">
+            <div className="flex items-center space-x-3">
               <button
                 onClick={() => navigate('/dashboard')}
                 className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
@@ -117,6 +119,7 @@ export const DocumentsPage: React.FC = () => {
                 <BarChart3 className="w-5 h-5" />
                 <span className="font-medium">Dashboard</span>
               </button>
+              <UserProfile />
             </div>
           </div>
         </div>
