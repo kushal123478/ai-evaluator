@@ -49,7 +49,8 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
     const initializeAuth = async () => {
       setLoading(true);
       try {
-        if (isAuthenticated && user) {
+        // Only get access token if we're authenticated, have a user, and don't already have a token
+        if (isAuthenticated && user && !accessToken) {
           await getAccessToken();
         }
       } catch (error) {
@@ -91,7 +92,11 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const getAccessToken = async (): Promise<string | null> => {
+    console.log('getAccessToken called, user:', user ? 'present' : 'null');
+    console.log('isAuthenticated:', isAuthenticated);
+    
     if (!user) {
+      console.log('No user found, returning null token');
       return null;
     }
 
@@ -101,16 +106,18 @@ const AuthProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
         account: user
       };
 
+      console.log('Attempting silent token acquisition with scopes:', silentRequest.scopes);
       const response: AuthenticationResult = await instance.acquireTokenSilent(silentRequest);
+      console.log('Silent token acquisition successful');
       setAccessToken(response.accessToken);
       return response.accessToken;
     } catch (error) {
       console.error('Silent token acquisition failed:', error);
       // If silent acquisition fails, try interactive
       try {
-        const response: AuthenticationResult = await instance.acquireTokenPopup(loginRequest);
-        setAccessToken(response.accessToken);
-        return response.accessToken;
+        console.log('Attempting interactive token acquisition via redirect');
+        await instance.acquireTokenRedirect(loginRequest);
+        return null; // Redirect will handle the token acquisition
       } catch (interactiveError) {
         console.error('Interactive token acquisition failed:', interactiveError);
         return null;

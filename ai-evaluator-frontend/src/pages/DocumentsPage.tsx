@@ -31,10 +31,16 @@ export const DocumentsPage: React.FC = () => {
   const fetchDocuments = async () => {
     try {
       const response = await authenticatedRequest('/api/documents');
-      const data = await response.json();
-      setDocuments(data);
+      if (response.ok) {
+        const data = await response.json();
+        setDocuments(Array.isArray(data) ? data : []);
+      } else {
+        console.error('Failed to fetch documents:', response.status, response.statusText);
+        setDocuments([]);
+      }
     } catch (error) {
       console.error('Error fetching documents:', error);
+      setDocuments([]);
     } finally {
       setLoading(false);
     }
@@ -44,10 +50,16 @@ export const DocumentsPage: React.FC = () => {
     setScanningTestCases(true);
     try {
       const response = await authenticatedRequest('/api/testcases/scan');
-      const data = await response.json();
-      setTestCases(data);
+      if (response.ok) {
+        const data = await response.json();
+        setTestCases(Array.isArray(data) ? data : []);
+      } else {
+        console.error('Failed to scan test cases:', response.status, response.statusText);
+        setTestCases([]);
+      }
     } catch (error) {
       console.error('Error scanning test cases:', error);
+      setTestCases([]);
     } finally {
       setScanningTestCases(false);
     }

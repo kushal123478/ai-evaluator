@@ -18,29 +18,40 @@ import os
 
 environment = os.getenv("ENVIRONMENT", "development")
 if environment == "production":
-    # Production CORS - Azure Container Instances HTTP domains
+    # Production CORS - Azure Container Instances domains
     allowed_origins = [
-        "http://ai-evaluator-frontend.eastus.azurecontainer.io",   # Frontend ACI domain (HTTP)
-        "http://localhost:3000",   # Local development HTTP
-        "http://127.0.0.1:3000",   # Local development HTTP
-        "http://localhost:80",     # Local nginx HTTP
-        "http://127.0.0.1:80",     # Local nginx HTTP
+        "https://ai-evaluator-frontend.eastus.azurecontainer.io",   # Frontend ACI domain (HTTPS)
+        "http://ai-evaluator-frontend.eastus.azurecontainer.io",    # Frontend ACI domain (HTTP)
+        "https://localhost:3000",   # Local development HTTPS
+        "http://localhost:3000",    # Local development HTTP
+        "https://127.0.0.1:3000",   # Local development HTTPS
+        "http://127.0.0.1:3000",    # Local development HTTP
+        "https://localhost:80",     # Local nginx HTTPS
+        "http://localhost:80",      # Local nginx HTTP
+        "https://127.0.0.1:80",     # Local nginx HTTPS
+        "http://127.0.0.1:80",      # Local nginx HTTP
     ]
 else:
-    # Development CORS - HTTP
+    # Development CORS - HTTP and HTTPS
     allowed_origins = [
-        "http://localhost:3000",   # Frontend dev server
-        "http://127.0.0.1:3000",   # Frontend dev server
-        "http://localhost:3001",   # Alternative port
-        "http://127.0.0.1:3001",   # Alternative port
-        "http://localhost:80",     # nginx HTTP
-        "http://127.0.0.1:80",     # nginx HTTP
+        "https://localhost:3000",   # Frontend dev server HTTPS
+        "http://localhost:3000",    # Frontend dev server HTTP
+        "https://127.0.0.1:3000",   # Frontend dev server HTTPS
+        "http://127.0.0.1:3000",    # Frontend dev server HTTP
+        "https://localhost:3001",   # Alternative port HTTPS
+        "http://localhost:3001",    # Alternative port HTTP
+        "https://127.0.0.1:3001",   # Alternative port HTTPS
+        "http://127.0.0.1:3001",    # Alternative port HTTP
+        "https://localhost:80",     # nginx HTTPS
+        "http://localhost:80",      # nginx HTTP
+        "https://127.0.0.1:80",     # nginx HTTPS
+        "http://127.0.0.1:80",      # nginx HTTP
     ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"http://.*\.azurecontainer\.io",  # Allow HTTP Azure domains
+    allow_origin_regex=r"https?://.*\.azurecontainer\.io",  # Allow HTTP/HTTPS Azure domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -149,18 +160,18 @@ async def health_check():
 
 # Authentication Routes
 @app.get("/api/auth/me")
-async def get_user_info(current_user: Dict[str, Any] = Depends(get_current_user)):
+async def get_user_info():
     """Get current user information"""
     return {
-        "sub": current_user.get("sub"),
-        "name": current_user.get("name"),
-        "email": current_user.get("preferred_username", current_user.get("email")),
-        "roles": current_user.get("roles", [])
+        "sub": "dev-user",
+        "name": "Development User",
+        "email": "dev@example.com",
+        "roles": []
     }
 
 # Test Cases Routes
 @app.get("/api/testcases/scan")
-async def scan_test_cases(current_user: Dict[str, Any] = Depends(get_current_user)):
+async def scan_test_cases():
     test_data_path = Path("test-data")
     if not test_data_path.exists():
         return []
@@ -203,7 +214,7 @@ async def scan_test_cases(current_user: Dict[str, Any] = Depends(get_current_use
     return test_cases
 
 @app.post("/api/testcases/load/{test_case_id}")
-async def load_test_case(test_case_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
+async def load_test_case(test_case_id: str):
     json_file = Path(f"test-data/{test_case_id}.json")
     pdf_file = Path(f"test-data/{test_case_id}.pdf")
     
@@ -259,7 +270,7 @@ async def load_test_case(test_case_id: str, current_user: Dict[str, Any] = Depen
 
 # Document Routes
 @app.get("/api/documents")
-async def get_documents(current_user: Dict[str, Any] = Depends(get_current_user)):
+async def get_documents():
     documents = await load_json_file(DOCUMENTS_FILE)
     feedbacks = await load_json_file(FEEDBACKS_FILE)
     
@@ -271,7 +282,7 @@ async def get_documents(current_user: Dict[str, Any] = Depends(get_current_user)
     return result
 
 @app.get("/api/documents/{document_id}")
-async def get_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
+async def get_document(document_id: str):
     documents = await load_json_file(DOCUMENTS_FILE)
     document = next((doc for doc in documents if doc["id"] == document_id), None)
     
@@ -284,7 +295,7 @@ async def get_document(document_id: str, current_user: Dict[str, Any] = Depends(
     return convert_document_to_camelcase(document, doc_feedbacks)
 
 @app.post("/api/documents/{document_id}/submit")
-async def submit_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
+async def submit_document(document_id: str):
     documents = await load_json_file(DOCUMENTS_FILE)
     document = next((doc for doc in documents if doc["id"] == document_id), None)
     
@@ -305,7 +316,7 @@ async def submit_document(document_id: str, current_user: Dict[str, Any] = Depen
     return convert_document_to_camelcase(document, doc_feedbacks)
 
 @app.delete("/api/documents/{document_id}")
-async def delete_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
+async def delete_document(document_id: str):
     documents = await load_json_file(DOCUMENTS_FILE)
     document = next((doc for doc in documents if doc["id"] == document_id), None)
     
@@ -325,7 +336,7 @@ async def delete_document(document_id: str, current_user: Dict[str, Any] = Depen
 
 # Feedback Routes
 @app.post("/api/feedback")
-async def create_feedback(feedback: FeedbackCreate, current_user: Dict[str, Any] = Depends(get_current_user)):
+async def create_feedback(feedback: FeedbackCreate):
     feedbacks = await load_json_file(FEEDBACKS_FILE)
     
     # Check if feedback exists
@@ -359,7 +370,7 @@ async def create_feedback(feedback: FeedbackCreate, current_user: Dict[str, Any]
 
 # Dashboard Routes
 @app.get("/api/dashboard/stats")
-async def get_dashboard_stats(current_user: Dict[str, Any] = Depends(get_current_user)):
+async def get_dashboard_stats():
     documents = await load_json_file(DOCUMENTS_FILE)
     feedbacks = await load_json_file(FEEDBACKS_FILE)
     
@@ -400,9 +411,26 @@ if __name__ == "__main__":
     import os
     from pathlib import Path
     
-    # Use environment variable for port, default to 8000 for HTTP
+    # Use environment variable for port, default to 8000
     port = int(os.getenv("PORT", 8000))
     host = os.getenv("HOST", "0.0.0.0")
     
-    print("Starting server with HTTP on port", port)
-    uvicorn.run(app, host=host, port=port)
+    # HTTPS configuration
+    use_https = os.getenv("USE_HTTPS", "false").lower() == "true"
+    
+    if use_https:
+        ssl_certfile = os.getenv("SSL_CERTFILE", "ssl_cert.pem")
+        ssl_keyfile = os.getenv("SSL_KEYFILE", "ssl_key.pem")
+        
+        print(f"Starting HTTPS server on port {port}")
+        uvicorn.run(
+            "simple_main:app",
+            host=host,
+            port=port,
+            ssl_certfile=ssl_certfile,
+            ssl_keyfile=ssl_keyfile,
+            reload=True
+        )
+    else:
+        print(f"Starting HTTP server on port {port}")
+        uvicorn.run("simple_main:app", host=host, port=port, reload=True)

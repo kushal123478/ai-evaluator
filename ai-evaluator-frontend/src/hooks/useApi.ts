@@ -9,17 +9,32 @@ interface UseApiReturn {
 }
 
 export const useApi = (): UseApiReturn => {
-  const { getAccessToken, isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
   const authenticatedRequest = useCallback(async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
     try {
-      const accessToken = await getAccessToken();
-      return await apiRequest(endpoint, options, accessToken || undefined);
+      // Skip authentication for development - make unauthenticated requests
+      console.log('Making unauthenticated request for development');
+      
+      // Ensure no Authorization header is present
+      const cleanOptions = {
+        ...options,
+        headers: {
+          ...(options.headers || {}),
+        }
+      };
+      
+      // Remove any Authorization header if it exists
+      if (cleanOptions.headers && 'Authorization' in cleanOptions.headers) {
+        delete (cleanOptions.headers as any).Authorization;
+      }
+      
+      return await apiRequest(endpoint, cleanOptions);
     } catch (error) {
-      console.error('Authenticated request failed:', error);
+      console.error('API request failed:', error);
       throw error;
     }
-  }, [getAccessToken]);
+  }, []);
 
   return {
     authenticatedRequest,

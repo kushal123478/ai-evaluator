@@ -1,26 +1,42 @@
-import { Configuration, PopupRequest, RedirectRequest } from '@azure/msal-browser';
+import { Configuration, RedirectRequest } from '@azure/msal-browser';
 
 // MSAL configuration
 export const msalConfig: Configuration = {
   auth: {
-    clientId: import.meta.env.VITE_AZURE_CLIENT_ID || '',
-    authority: import.meta.env.VITE_AZURE_AUTHORITY || '',
+    clientId: import.meta.env.VITE_AZURE_CLIENT_ID!,
+    authority: import.meta.env.VITE_AZURE_AUTHORITY!,
     redirectUri: window.location.origin,
-    postLogoutRedirectUri: window.location.origin
+    postLogoutRedirectUri: window.location.origin,
+    navigateToLoginRequestUrl: false
   },
   cache: {
     cacheLocation: 'localStorage',
     storeAuthStateInCookie: false
+  },
+  system: {
+    allowNativeBroker: false
   }
 };
 
 // Add scopes for your API
 export const loginRequest: RedirectRequest = {
-  scopes: ['openid', 'profile', 'email', `api://${import.meta.env.VITE_AZURE_CLIENT_ID}/access_as_user`]
+  scopes: [
+    'openid', 
+    'profile', 
+    'email'
+    // Temporarily removing API scope until it's configured in Azure
+    // `api://${import.meta.env.VITE_AZURE_CLIENT_ID}/access_as_user`
+  ]
 };
 
-export const silentRequest: PopupRequest = {
-  scopes: ['openid', 'profile', 'email', `api://${import.meta.env.VITE_AZURE_CLIENT_ID}/access_as_user`],
+export const silentRequest: RedirectRequest = {
+  scopes: [
+    'openid', 
+    'profile', 
+    'email'
+    // Temporarily removing API scope until it's configured in Azure
+    // `api://${import.meta.env.VITE_AZURE_CLIENT_ID}/access_as_user`
+  ],
   prompt: 'none'
 };
 

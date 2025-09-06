@@ -4,21 +4,52 @@ services:
   backend:
     build: ./ai-evaluator-backend
     ports:
-      - "8000:8000"   # HTTP
+      - "8000:8000"   # HTTPS
     volumes:
       - ./ai-evaluator-backend/test-data:/app/test-data
       - ./ai-evaluator-backend/uploads:/app/uploads
+      - ./ai-evaluator-backend/ssl_cert.pem:/app/ssl_cert.pem
+      - ./ai-evaluator-backend/ssl_key.pem:/app/ssl_key.pem
     environment:
       - PYTHONUNBUFFERED=1
       - PORT=8000
+      - HOST=0.0.0.0
+      - USE_HTTPS=true
+      - SSL_CERTFILE=ssl_cert.pem
+      - SSL_KEYFILE=ssl_key.pem
+      - ENVIRONMENT=development
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID:-dummy}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID:-dummy}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET:-dummy}
+      - MONGODB_URL=mongodb://admin:password123@mongodb:27017/ai_evaluator?authSource=admin
+    depends_on:
+      - mongodb
 
   frontend:
     build: 
       context: ./ai-evaluator-frontend
       args:
-        VITE_API_BASE_URL: http://localhost:8000
+        VITE_API_BASE_URL: https://localhost:8000
     ports:
-      - "80:80"       # HTTP (redirects to HTTPS)
-      - "443:443"     # HTTPS
+      - "3000:80"     # Frontend HTTP
     depends_on:
       - backend
+      - mongodb
+
+  mongodb:
+    image: mongo:7.0
+    container_name: ai-evaluator-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password123
+      - MONGO_INITDB_DATABASE=ai_evaluator
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+
+volumes:
+  mongodb_data:
+  mongodb_config:

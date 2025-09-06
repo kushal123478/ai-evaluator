@@ -71,3 +71,6 @@ ehthumbs.db
 Thumbs.db
 
 github-secrets.txt
+.env
+ai-evaluator-backend/.env
+ai-evaluator-frontend/.env

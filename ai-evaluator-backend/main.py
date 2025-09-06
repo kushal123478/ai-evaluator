@@ -32,9 +32,13 @@ async def shutdown_event():
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://localhost:3000",
         "http://localhost:3000",
+        "https://127.0.0.1:3000",
         "http://127.0.0.1:3000",
-        "http://localhost:3001", 
+        "https://localhost:3001", 
+        "http://localhost:3001",
+        "https://127.0.0.1:3001",
         "http://127.0.0.1:3001"
     ],
     allow_credentials=True,
@@ -56,7 +60,7 @@ async def health_check():
 
 # Authentication Routes
 @app.get("/api/auth/me")
-async def get_user_info(current_user: Dict[str, Any] = Depends(get_current_user)):
+async def get_user_info():
     """Get current user information"""
     return {
         "user": current_user,
@@ -74,11 +78,11 @@ async def get_auth_config():
 
 # Test Cases Routes
 @app.get("/api/testcases/scan")
-async def scan_test_cases(current_user: Dict[str, Any] = Depends(get_current_user)):
+async def scan_test_cases():
     return await testcase_service.scan_test_cases()
 
 @app.post("/api/testcases/load/{test_case_id}")
-async def load_test_case(test_case_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
+async def load_test_case(test_case_id: str):
     try:
         return await testcase_service.load_test_case(test_case_id)
     except FileNotFoundError:
@@ -88,25 +92,25 @@ async def load_test_case(test_case_id: str, current_user: Dict[str, Any] = Depen
 
 # Document Routes
 @app.get("/api/documents", response_model=List[DocumentResponse])
-async def get_documents(current_user: Dict[str, Any] = Depends(get_current_user)):
+async def get_documents():
     return await document_service.get_all_documents()
 
 @app.get("/api/documents/{document_id}", response_model=DocumentResponse)
-async def get_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
+async def get_document(document_id: str):
     document = await document_service.get_document(document_id)
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
     return document
 
 @app.post("/api/documents/{document_id}/submit")
-async def submit_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
+async def submit_document(document_id: str):
     document = await document_service.submit_document(document_id)
     if not document:
         raise HTTPException(status_code=404, detail="Document not found or already submitted")
     return document
 
 @app.delete("/api/documents/{document_id}")
-async def delete_document(document_id: str, current_user: Dict[str, Any] = Depends(get_current_user)):
+async def delete_document(document_id: str):
     success = await document_service.delete_document(document_id)
     if not success:
         raise HTTPException(status_code=404, detail="Document not found")
@@ -114,14 +118,38 @@ async def delete_document(document_id: str, current_user: Dict[str, Any] = Depen
 
 # Feedback Routes
 @app.post("/api/feedback", response_model=FeedbackResponse)
-async def create_feedback(feedback: FeedbackCreate, current_user: Dict[str, Any] = Depends(get_current_user)):
+async def create_feedback(feedback: FeedbackCreate):
     return await feedback_service.create_or_update_feedback(feedback)
 
 # Dashboard Routes
 @app.get("/api/dashboard/stats")
-async def get_dashboard_stats(current_user: Dict[str, Any] = Depends(get_current_user)):
+async def get_dashboard_stats():
     return await dashboard_service.get_dashboard_stats()
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    import os
+    
+    # Use environment variables for configuration
+    port = int(os.getenv("PORT", 8000))
+    host = os.getenv("HOST", "0.0.0.0")
+    
+    # HTTPS configuration
+    use_https = os.getenv("USE_HTTPS", "false").lower() == "true"
+    
+    if use_https:
+        ssl_certfile = os.getenv("SSL_CERTFILE", "ssl_cert.pem")
+        ssl_keyfile = os.getenv("SSL_KEYFILE", "ssl_key.pem")
+        
+        print(f"Starting HTTPS server on port {port}")
+        uvicorn.run(
+            app,
+            host=host,
+            port=port,
+            ssl_certfile=ssl_certfile,
+            ssl_keyfile=ssl_keyfile,
+            reload=False  # Disable reload for HTTPS
+        )
+    else:
+        print(f"Starting HTTP server on port {port}")
+        uvicorn.run(app, host=host, port=port)
