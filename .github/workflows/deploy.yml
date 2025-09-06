@@ -118,6 +118,8 @@ jobs:
       run: |
         terraform import azurerm_resource_group.main "/subscriptions/99c0cf0f-2430-4c10-8482-6b8bc3dea536/resourceGroups/rg-ai-evaluator" || true
         terraform import azurerm_container_registry.acr "/subscriptions/99c0cf0f-2430-4c10-8482-6b8bc3dea536/resourceGroups/rg-ai-evaluator/providers/Microsoft.ContainerRegistry/registries/aievaluatoracr" || true
+        terraform import azurerm_container_group.backend "/subscriptions/99c0cf0f-2430-4c10-8482-6b8bc3dea536/resourceGroups/rg-ai-evaluator/providers/Microsoft.ContainerInstance/containerGroups/ai-evaluator-backend" || true
+        terraform import azurerm_container_group.frontend "/subscriptions/99c0cf0f-2430-4c10-8482-6b8bc3dea536/resourceGroups/rg-ai-evaluator/providers/Microsoft.ContainerInstance/containerGroups/ai-evaluator-frontend" || true
     
     - name: Terraform Refresh
       working-directory: ./terraform
@@ -189,6 +191,8 @@ jobs:
       run: |
         terraform import azurerm_resource_group.main "/subscriptions/99c0cf0f-2430-4c10-8482-6b8bc3dea536/resourceGroups/rg-ai-evaluator" || true
         terraform import azurerm_container_registry.acr "/subscriptions/99c0cf0f-2430-4c10-8482-6b8bc3dea536/resourceGroups/rg-ai-evaluator/providers/Microsoft.ContainerRegistry/registries/aievaluatoracr" || true
+        terraform import azurerm_container_group.backend "/subscriptions/99c0cf0f-2430-4c10-8482-6b8bc3dea536/resourceGroups/rg-ai-evaluator/providers/Microsoft.ContainerInstance/containerGroups/ai-evaluator-backend" || true
+        terraform import azurerm_container_group.frontend "/subscriptions/99c0cf0f-2430-4c10-8482-6b8bc3dea536/resourceGroups/rg-ai-evaluator/providers/Microsoft.ContainerInstance/containerGroups/ai-evaluator-frontend" || true
 
     - name: Terraform Refresh
       working-directory: ./terraform
