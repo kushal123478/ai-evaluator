@@ -36,7 +36,7 @@ class DocumentService:
     async def get_document(self, document_id: str) -> Optional[DocumentResponse]:
         """Get a single document by ID with feedbacks"""
         try:
-            document = await Document.get(ObjectId(document_id))
+            document = await Document.get(document_id)
             if not document:
                 return None
                 
@@ -77,7 +77,7 @@ class DocumentService:
     async def submit_document(self, document_id: str) -> Optional[DocumentResponse]:
         """Submit and lock a document"""
         try:
-            document = await Document.get(ObjectId(document_id))
+            document = await Document.get(document_id)
             if not document:
                 return None
                 
@@ -99,7 +99,7 @@ class DocumentService:
             await Feedback.find(Feedback.document_id == document_id).delete()
             
             # Delete document
-            document = await Document.get(ObjectId(document_id))
+            document = await Document.get(document_id)
             if document:
                 await document.delete()
                 return True

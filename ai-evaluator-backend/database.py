@@ -1,7 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 import os
-from models import Document, Feedback
+from models import Document, Feedback, TestCase
 
 class Database:
     client: AsyncIOMotorClient = None
@@ -16,7 +16,7 @@ async def connect_to_mongo():
     db.database = db.client.ai_evaluator
     
     # Initialize beanie with document models
-    await init_beanie(database=db.database, document_models=[Document, Feedback])
+    await init_beanie(database=db.database, document_models=[Document, Feedback, TestCase])
 
 async def close_mongo_connection():
     """Close database connection"""

@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -13,6 +16,7 @@ from services.document_service import document_service
 from services.feedback_service import feedback_service
 from services.dashboard_service import dashboard_service
 from auth import get_current_user, get_optional_user
+
 
 app = FastAPI(title="AI Output Evaluator API", version="1.0.0")
 
@@ -87,6 +91,15 @@ async def load_test_case(test_case_id: str):
         return await testcase_service.load_test_case(test_case_id)
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Test case not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/testcases/migrate")
+async def migrate_test_cases():
+    """Migrate existing JSON files from test-data directory to MongoDB"""
+    try:
+        count = await testcase_service.migrate_json_files_to_mongodb()
+        return {"migrated_count": count, "message": f"Successfully migrated {count} test cases to MongoDB"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

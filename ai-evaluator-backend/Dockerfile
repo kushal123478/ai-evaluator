@@ -32,4 +32,4 @@ RUN if [ ! -f ssl_cert.pem ]; then \
 EXPOSE 8000
 
 # Command to run the application
-CMD ["python", "simple_main.py"]
+CMD ["python", "main.py"]

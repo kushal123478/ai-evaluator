@@ -1,28 +1,11 @@
-from beanie import Document as BeanieDocument, Indexed
+from beanie import Document as BeanieDocument, Indexed, PydanticObjectId
 from pydantic import BaseModel, Field
 from typing import Optional, Any, Dict, List
 from datetime import datetime
 from bson import ObjectId
 
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid objectid")
-        return ObjectId(v)
-
-    @classmethod
-    def __get_pydantic_json_schema__(cls, core_schema, handler):
-        json_schema = handler(core_schema)
-        json_schema.update(type="string")
-        return json_schema
-
 class Document(BeanieDocument):
-    id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
+    id: Optional[PydanticObjectId] = Field(default=None, alias="_id")
     filename: str
     original_name: str
     file_path: str
@@ -39,8 +22,26 @@ class Document(BeanieDocument):
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
 
+class TestCase(BeanieDocument):
+    id: Optional[PydanticObjectId] = Field(default=None, alias="_id")
+    filename: str  # e.g., "invoice_001"
+    original_name: str  # e.g., "invoice_001.pdf"
+    json_file: str  # e.g., "invoice_001.json"
+    pdf_file: Optional[str] = None  # e.g., "invoice_001.pdf"
+    ai_output: Dict[str, Any]  # The JSON content
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    last_modified: datetime = Field(default_factory=datetime.utcnow)
+
+    class Settings:
+        collection = "testcases"
+        
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+
 class Feedback(BeanieDocument):
-    id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
+    id: Optional[PydanticObjectId] = Field(default=None, alias="_id")
     document_id: str
     field_path: str
     field_name: str
